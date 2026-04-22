@@ -99,5 +99,5 @@ type PaneBorder struct{
 }
 
 var (
-	DefaultBorder = PaneBorder{Enabled: true, TopLeft: "┌", TopRight: "┐", BottomLeft: "└", BottomRight: "┘", Vertical: "│", Horizontal: "─", Color: lipgloss.Color("#ffb845")}
+	DefaultBorder = PaneBorder{Enabled: true, TopLeft: "┌", TopRight: "┐", BottomLeft: "└", BottomRight: "┘", Vertical: "│", Horizontal: "─", Color: lipgloss.Color("#FFFFFF")}
 )
