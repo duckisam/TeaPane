@@ -1,4 +1,4 @@
-module TeaPane
+module github.com/duckisam/TeaPane
 
 go 1.26.1
 

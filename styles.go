@@ -1,26 +1,43 @@
 package teapane
 
+import (
+	"github.com/charmbracelet/lipgloss"
+)
+
 type PaneStyle struct{
-	grow      int
-	shrink    int
-	basis     Size
-	minWidth  Size
-	maxWidth  Size
-	minHeight Size 
-	maxHeight Size 
-	order     int
-	wrapText  bool
-	alignSelf AlignSelf
+	Grow          int
+	Shrink        int
+	Basis         Size
+	CrossBasis    Size
+	MinBasis      int
+	MaxBasis      int
+	MinCrossBasis int
+	MaxCrossBasis int
+	Order         int
+	WrapText      bool
+	AlignSelf     AlignSelf
+	Border        PaneBorder
 }
 
 type ContainerStyle struct{
-	flexDirection FlexDirection 
-	flexWrap      FlexWrap
-	justify       Justify
-	alignItems    AlignItems
-	alignContent  AlignContent
-	gapRow        int
-	gapColumn     int
+	FlexDirection FlexDirection
+	FlexWrap      FlexWrap
+	Justify       Justify
+	AlignItems    AlignItems
+	AlignContent  AlignContent
+	GapRow        int
+	GapColumn     int
+}
+
+func NewContainerStyle() ContainerStyle{
+	return ContainerStyle{
+		FlexDirection: DirectionRow,
+		FlexWrap: WrapNone,
+		Justify: JustifyStart,
+		AlignItems: AlignItemStrech,
+		AlignContent: AlignContentStrech,
+	}
+
 }
 
 type FlexDirection string
@@ -28,7 +45,7 @@ type FlexWrap      string
 type Justify       string
 type AlignItems    string
 type AlignContent  string
-type AlignSelf    string
+type AlignSelf     string
 
 const (
 	DirectionRow     FlexDirection = "row"
@@ -71,10 +88,16 @@ const (
 )
 
 type PaneBorder struct{
-	topLeft     string
-	topRIght    string
-	bottomLeft  string
-	bottomRight string
-	horizontal  string
-	vertical    string
+	Enabled     bool
+	TopLeft     string
+	TopRight    string
+	BottomLeft  string
+	BottomRight string
+	Horizontal  string
+	Vertical    string
+	Color       lipgloss.Color
 }
+
+var (
+	DefaultBorder = PaneBorder{Enabled: true, TopLeft: "┌", TopRight: "┐", BottomLeft: "└", BottomRight: "┘", Vertical: "│", Horizontal: "─", Color: lipgloss.Color("#ffb845")}
+)

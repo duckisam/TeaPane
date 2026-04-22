@@ -10,10 +10,21 @@ const (
 )
 
 type Size struct{
-	value int
-	unit SizeUnit
+	Value int
+	Unit SizeUnit
 }
 
-func Auto()         Size {return Size{unit: UnitPercent}}
-func Fixed(n int)   Size {return Size{value: n, unit: UnitFixed}}
-func Percent(n int) Size {return Size{value: n, unit: UnitPercent}}
+func Auto()         Size {return Size{Unit: UnitPercent}}
+func Fixed(n int)   Size {return Size{Value: n, Unit: UnitFixed}}
+func Percent(n int) Size {return Size{Value: n, Unit: UnitPercent}}
+
+func ResolveSize(s Size, total int) int{
+	switch s.Unit{
+	case UnitFixed:
+		return s.Value
+	case UnitPercent:
+		return (s.Value * total) / 100
+	default:
+		return 0
+	}
+}
