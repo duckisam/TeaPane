@@ -16,6 +16,8 @@ It is designed to pair well with the [Bubble Tea](https://github.com/charmbracel
 
 ## Installation
 
+From inside your Go module:
+
 ```bash
 go get github.com/duckisam/TeaPane
 ```
