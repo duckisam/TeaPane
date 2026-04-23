@@ -36,7 +36,7 @@ func RenderPane(p Pane, width, height int) string{
 				str.WriteRune('\n')
 			}
 			if p.DisplayString[i] == ' ' && count == 0{ continue }
-			str.WriteByte(p.DisplayString[i])
+			str.WriteRune(rune(p.DisplayString[i]))
 			count++
 		}
 		p.DisplayString = str.String()
@@ -58,7 +58,7 @@ func RenderPane(p Pane, width, height int) string{
 			}
 		}
 		if p.Style.Border.Enabled{ paneString.WriteString(borderStyle.Render(p.Style.Border.Vertical)) }
-		paneString.WriteByte('\n')
+		paneString.WriteRune('\n')
 	}
 
 	if p.Style.Border.Enabled{
