@@ -33,7 +33,7 @@ func RenderPane(p Pane, width, height int) string{
 		for i := 0; i < len(p.DisplayString); i++{
 			if count == textWidth + 1 ||  p.DisplayString[i] == '\n'{
 				count = 0
-				str.WriteByte('\n')
+				str.WriteRune('\n')
 			}
 			if p.DisplayString[i] == ' ' && count == 0{ continue }
 			str.WriteByte(p.DisplayString[i])
@@ -43,13 +43,18 @@ func RenderPane(p Pane, width, height int) string{
 	}
 	toWrite = strings.Split(p.DisplayString, "\n")
 
+	runeLines := make([][]rune, len(toWrite))
+	for i, line := range toWrite{
+		runeLines[i] = []rune(line)
+	}
+
 	for i := 0; i < textHeight; i++{
 		if p.Style.Border.Enabled{ paneString.WriteString(borderStyle.Render(p.Style.Border.Vertical)) }
 		for j := 0; j < textWidth; j++{
 			if i < len(toWrite) && j < len(toWrite[i]){
-				paneString.WriteByte(toWrite[i][j])
+				paneString.WriteRune(runeLines[i][j])
 			}else{
-				paneString.WriteByte(' ')
+				paneString.WriteRune(' ')
 			}
 		}
 		if p.Style.Border.Enabled{ paneString.WriteString(borderStyle.Render(p.Style.Border.Vertical)) }
