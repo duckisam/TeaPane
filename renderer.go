@@ -6,7 +6,12 @@ import (
 	"strings"
 	"github.com/charmbracelet/lipgloss"
 )
+
 func RenderPane(p Pane, width, height int) string{ 
+	if width <= 0 || height <= 0{
+		return ""
+	}
+
 	var paneString strings.Builder 
 	textWidth  := width
 	textHeight := height
@@ -16,7 +21,7 @@ func RenderPane(p Pane, width, height int) string{
 		textWidth  -= 2
 		textHeight -= 2
 		paneString.WriteString(borderStyle.Render(p.Style.Border.TopLeft))
-		paneString.WriteString(strings.Repeat(borderStyle.Render(p.Style.Border.Horizontal), width - 2))
+		paneString.WriteString(borderStyle.Render(strings.Repeat(p.Style.Border.Horizontal, width - 2)))
 		paneString.WriteString(borderStyle.Render(p.Style.Border.TopRight))
 		paneString.WriteRune('\n')
 	}
@@ -53,7 +58,7 @@ func RenderPane(p Pane, width, height int) string{
 
 	if p.Style.Border.Enabled{
 		paneString.WriteString(borderStyle.Render(p.Style.Border.BottomLeft))
-		paneString.WriteString(strings.Repeat(borderStyle.Render(p.Style.Border.Horizontal), width - 2))
+		paneString.WriteString(borderStyle.Render(strings.Repeat(p.Style.Border.Horizontal, width - 2)))
 		paneString.WriteString(borderStyle.Render(p.Style.Border.BottomRight))
 	}
 
@@ -68,6 +73,10 @@ func clampI(mn, mx, val int) int {
 
 
 func ResolvePaneSizes(panes []Pane, main, cross int) []Pane {
+	if main <= 0 || cross <= 0{
+		return nil
+	}
+
 	usedMain  := 0
 
 	//first pass for fixed width
@@ -117,6 +126,9 @@ func ResolvePaneSizes(panes []Pane, main, cross int) []Pane {
 }
 
 func RenderContainer(c PaneContainer, main, cross int) string{
+	if c.Panes == nil{
+		return ""
+	}
 	//order
 	slices.SortStableFunc(c.Panes, func(i, j Pane) int{
 		return cmp.Compare(i.Style.Order, j.Style.Order)
