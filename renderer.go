@@ -4,7 +4,9 @@ import (
 	"cmp"
 	"slices"
 	"strings"
+
 	"github.com/charmbracelet/lipgloss"
+	"github.com/mattn/go-runewidth"
 )
 
 func RenderPane(p Pane, width, height int) string{ 
@@ -15,6 +17,7 @@ func RenderPane(p Pane, width, height int) string{
 	var paneString strings.Builder 
 	textWidth  := width
 	textHeight := height
+
 	borderStyle := lipgloss.NewStyle().Foreground(DefaultBorder.Color)
 	
 	if p.Style.Border.Enabled{
@@ -28,35 +31,42 @@ func RenderPane(p Pane, width, height int) string{
 
 	var toWrite []string
 	if p.Style.WrapText{
-		var str strings.Builder
-		count := 0
-		for i := 0; i < len(p.DisplayString); i++{
-			if count == textWidth + 1 ||  p.DisplayString[i] == '\n'{
-				count = 0
+		var str strings.Builder 
+		col := 0
+		for _, r := range p.DisplayString{
+			if col == textWidth + 1 || r == '\n'{
+				col = 0
 				str.WriteRune('\n')
 			}
-			if p.DisplayString[i] == ' ' && count == 0{ continue }
-			str.WriteRune(rune(p.DisplayString[i]))
-			count++
+			
+			if r == ' ' && col == 0 { continue }
+			
+			
+			col += runewidth.RuneWidth(r)
+			str.WriteRune(r)
 		}
 		p.DisplayString = str.String()
 	}
 	toWrite = strings.Split(p.DisplayString, "\n")
 
-	runeLines := make([][]rune, len(toWrite))
-	for i, line := range toWrite{
-		runeLines[i] = []rune(line)
-	}
 
 	for i := 0; i < textHeight; i++{
 		if p.Style.Border.Enabled{ paneString.WriteString(borderStyle.Render(p.Style.Border.Vertical)) }
-		for j := 0; j < textWidth; j++{
-			if i < len(toWrite) && j < len(toWrite[i]){
-				paneString.WriteRune(runeLines[i][j])
-			}else{
-				paneString.WriteRune(' ')
+		col := 0
+
+		if i < len(toWrite){
+			for _, r := range toWrite[i]{
+				col += runewidth.RuneWidth(r)
+				if col > textWidth{ break }
+				paneString.WriteRune(r)
 			}
 		}
+
+		for col < textWidth{
+			paneString.WriteRune(' ')
+			col++
+		}
+
 		if p.Style.Border.Enabled{ paneString.WriteString(borderStyle.Render(p.Style.Border.Vertical)) }
 		paneString.WriteRune('\n')
 	}
@@ -120,7 +130,7 @@ func ResolvePaneSizes(panes []Pane, main, cross int) []Pane {
 	}
 
 	for i, pane := range panes{
-		size := clampI(pane.Style.MinCrossBasis, pane.Style.MaxBasis, ResolveSize(pane.Style.CrossBasis, cross))
+		size := clampI(pane.Style.MinCrossBasis, pane.Style.MaxCrossBasis, ResolveSize(pane.Style.CrossBasis, cross))
 		if size == 0{
 			size = cross
 		}
