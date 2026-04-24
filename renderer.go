@@ -4,9 +4,7 @@ import (
 	"cmp"
 	"slices"
 	"strings"
-
 	"github.com/charmbracelet/lipgloss"
-	"github.com/mattn/go-runewidth"
 )
 
 func RenderPane(p Pane, width, height int) string{ 
@@ -31,41 +29,26 @@ func RenderPane(p Pane, width, height int) string{
 
 	var toWrite []string
 	if p.Style.WrapText{
-		var str strings.Builder 
-		col := 0
-		for _, r := range p.DisplayString{
-			if col == textWidth + 1 || r == '\n'{
-				col = 0
-				str.WriteRune('\n')
-			}
-			
-			if r == ' ' && col == 0 { continue }
-			
-			
-			col += runewidth.RuneWidth(r)
-			str.WriteRune(r)
-		}
-		p.DisplayString = str.String()
+		p.DisplayString = lipgloss.NewStyle().Width(textWidth).Render(p.DisplayString)
 	}
 	toWrite = strings.Split(p.DisplayString, "\n")
 
 
 	for i := 0; i < textHeight; i++{
 		if p.Style.Border.Enabled{ paneString.WriteString(borderStyle.Render(p.Style.Border.Vertical)) }
-		col := 0
-
+		line := ""
 		if i < len(toWrite){
-			for _, r := range toWrite[i]{
-				col += runewidth.RuneWidth(r)
-				if col > textWidth{ break }
-				paneString.WriteRune(r)
+			line = toWrite[i]
+		}
+
+		visibleWidth := lipgloss.Width(line)
+		paneString.WriteString(lipgloss.NewStyle().MaxWidth(textWidth).Render(line))
+		if visibleWidth < textWidth{
+			for range textWidth - visibleWidth{
+				paneString.WriteRune(' ')
 			}
 		}
-
-		for col < textWidth{
-			paneString.WriteRune(' ')
-			col++
-		}
+		
 
 		if p.Style.Border.Enabled{ paneString.WriteString(borderStyle.Render(p.Style.Border.Vertical)) }
 		paneString.WriteRune('\n')
