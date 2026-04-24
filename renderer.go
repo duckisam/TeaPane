@@ -41,8 +41,9 @@ func RenderPane(p Pane, width, height int) string{
 			line = toWrite[i]
 		}
 
-		visibleWidth := lipgloss.Width(line)
-		paneString.WriteString(lipgloss.NewStyle().MaxWidth(textWidth).Render(line))
+		s :=lipgloss.NewStyle().MaxWidth(textWidth).Render(line) 
+		paneString.WriteString(s)
+		visibleWidth := lipgloss.Width(s)
 		if visibleWidth < textWidth{
 			for range textWidth - visibleWidth{
 				paneString.WriteRune(' ')
@@ -110,6 +111,12 @@ func ResolvePaneSizes(panes []Pane, main, cross int) []Pane {
 			}
 		}
 
+	}
+
+	leftOver := main - usedMain
+
+	if leftOver > 0{
+		panes[len(panes)-1].Width += leftOver
 	}
 
 	for i, pane := range panes{
